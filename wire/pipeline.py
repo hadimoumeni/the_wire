@@ -96,6 +96,18 @@ async def run_pipeline(transcript: str, ticker: str = "", quarter: str = "",
     qa = management_text(segments, section="qa")
     mgmt_all = management_text(segments)
 
+    # Format-agnostic fallback: speaker parsing is a best-effort enhancement, not
+    # a requirement. If it didn't identify enough management speech (unknown
+    # transcript layout, or none at all — e.g. a raw paragraph dump), analyze the
+    # transcript as-is. The verifier grounds every quote against the full raw
+    # transcript, so this is safe for any format.
+    MIN_CONTENT = 600
+    full = transcript[:20000]
+    if len(mgmt_all) < MIN_CONTENT:
+        mgmt_all = full
+    if len(prepared) < MIN_CONTENT and len(qa) < MIN_CONTENT:
+        prepared, qa = full, ""
+
     # 2 + 3. specialists (concurrent) → verifier, with a self-correction retry:
     # if the model fabricated everything (nothing grounds), try once more and
     # keep the better attempt. Deterministic heuristic mode never retries.
