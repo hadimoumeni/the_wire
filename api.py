@@ -14,30 +14,46 @@ from __future__ import annotations
 
 import os
 
+import json
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from slowapi import Limiter
+from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from wire import db
 from wire.llm import get_client
 from wire.pipeline import run_pipeline
+from wire.schemas import Thesis
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SAMPLE = os.path.join(HERE, "data", "sample_transcript.txt")
+SEED = os.path.join(HERE, "seed", "theses.json")
 DIST = os.path.join(HERE, "frontend", "dist")
+
+
+def seed_if_empty() -> None:
+    """On a fresh (e.g. cloud) DB, load pre-generated theses so the site isn't
+    empty. Real theses are generated locally with the model; the cloud service
+    is display-first."""
+    if db.list_theses() or not os.path.isfile(SEED):
+        return
+    for d in json.load(open(SEED, encoding="utf-8")):
+        d.pop("id", None)
+        db.save_thesis(Thesis.model_validate(d))
+
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="The Wire", version="0.1.0")
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded,
-                          lambda r, e: HTTPException(429, "rate limit exceeded"))
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
 )
+seed_if_empty()
 
 
 class AnalyzeIn(BaseModel):

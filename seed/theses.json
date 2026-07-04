@@ -1,0 +1,165 @@
+[
+  {
+    "id": null,
+    "ticker": "NWL",
+    "quarter": "Q3 2026",
+    "created_at": "2026-07-04T14:39:06",
+    "model_name": "qwen2.5:7b-instruct",
+    "mode": "ollama",
+    "stance": "neutral",
+    "conviction": 65,
+    "headline": "Cautious Optimism Amidst Economic Headwinds and Litigation Concerns",
+    "sentiment": {
+      "tone": "neutral",
+      "confidence_score": 65,
+      "hedging_score": 35,
+      "prepared_tone": "",
+      "qa_tone": "",
+      "qa_delta": "",
+      "summary": "Management appears to be cautiously optimistic about the core business while being more cautious regarding the freight brokerage segment.",
+      "evidence": [
+        {
+          "quote": "Our investments in route optimization are paying off, and we expect that to continue.",
+          "claim": "We are executing well, and the team is delivering. Our investments in route optimization are paying off, and we expect that to continue.",
+          "supported": true,
+          "score": 100.0,
+          "start": 1047,
+          "end": 1132,
+          "matched_text": "Our investments in route optimization are paying off, and we expect that to continue."
+        },
+        {
+          "quote": "It's difficult to say precisely when spot rates normalize. We're monitoring it closely, and we'll know more over the next couple of quarters.",
+          "claim": "I don't want to get ahead of ourselves on timing. It's difficult to say precisely when spot rates normalize. We're monitoring it closely, and we'll know more over the next couple of quarters.",
+          "supported": true,
+          "score": 100.0,
+          "start": 3317,
+          "end": 3458,
+          "matched_text": "It's difficult to say precisely when spot rates normalize. We're monitoring it closely, and we'll know more over the next couple of quarters."
+        },
+        {
+          "quote": "Directionally, the majority is the freight environment. The pull-forward is a smaller piece.",
+          "claim": "I don't want to put a precise number on that split. Directionally, the majority is the freight environment. The pull-forward is a smaller piece.",
+          "supported": true,
+          "score": 100.0,
+          "start": 5307,
+          "end": 5399,
+          "matched_text": "Directionally, the majority is the freight environment. The pull-forward is a smaller piece."
+        }
+      ]
+    },
+    "risks": [
+      {
+        "description": "Demand softness in the freight brokerage segment",
+        "severity": "medium",
+        "status": "recurring",
+        "citation": {
+          "quote": "We are seeing softness in spot-market volumes that has persisted longer than we anticipated.",
+          "claim": "Demand softness in the freight brokerage segment",
+          "supported": true,
+          "score": 100.0,
+          "start": 1203,
+          "end": 1295,
+          "matched_text": "We are seeing softness in spot-market volumes that has persisted longer than we anticipated."
+        }
+      },
+      {
+        "description": "Macro headwinds affecting revenue guidance",
+        "severity": "high",
+        "status": "escalating",
+        "citation": {
+          "quote": "I would characterize the macro backdrop as challenging, and we think it is prudent to plan conservatively.",
+          "claim": "Macro headwinds affecting revenue guidance",
+          "supported": true,
+          "score": 100.0,
+          "start": 2352,
+          "end": 2458,
+          "matched_text": "I would characterize the macro backdrop as challenging, and we think it is prudent to plan conservatively."
+        }
+      },
+      {
+        "description": "Litigation with a regional carrier partner",
+        "severity": "medium",
+        "status": "new",
+        "citation": {
+          "quote": "We recorded a $22 million charge related to an ongoing dispute with a regional carrier partner. We believe our position is strong, but litigation of this nature carries inherent uncertainty, and we cannot predict the ultimate outcome at this time.",
+          "claim": "Litigation with a regional carrier partner",
+          "supported": true,
+          "score": 100.0,
+          "start": 2478,
+          "end": 2725,
+          "matched_text": "we recorded a $22 million charge related to an ongoing dispute with a regional carrier partner. We believe our position is strong, but litigation of this nature carries inherent uncertainty, and we cannot predict the ultimate outcome at this time."
+        }
+      }
+    ],
+    "guidance": [
+      {
+        "metric": "Revenue",
+        "direction": "lowered",
+        "detail": "We now expect full-year revenue in the range of $3.28 billion to $3.31 billion, which is below our prior guidance of $3.35 billion to $3.40 billion.",
+        "citation": {
+          "quote": "$3.28 billion to $3.31 billion",
+          "claim": "Revenue",
+          "supported": true,
+          "score": 100.0,
+          "start": 1415,
+          "end": 1445,
+          "matched_text": "$3.28 billion to $3.31 billion"
+        }
+      },
+      {
+        "metric": "Q4 Revenue",
+        "direction": "maintained",
+        "detail": "",
+        "citation": {
+          "quote": "$860 million and $890 million",
+          "claim": "Q4 Revenue",
+          "supported": true,
+          "score": 100.0,
+          "start": 2076,
+          "end": 2105,
+          "matched_text": "$860 million and $890 million"
+        }
+      },
+      {
+        "metric": "Adjusted EPS Q4",
+        "direction": "lowered",
+        "detail": "We are trimming our full-year adjusted EPS guidance to a range of $4.30 to $4.45, down from $4.55 to $4.70 previously.",
+        "citation": {
+          "quote": "$1.05 and $1.15",
+          "claim": "Adjusted EPS Q4",
+          "supported": true,
+          "score": 100.0,
+          "start": 2131,
+          "end": 2146,
+          "matched_text": "$1.05 and $1.15"
+        }
+      },
+      {
+        "metric": "Full-Year Adjusted EPS",
+        "direction": "lowered",
+        "detail": "",
+        "citation": {
+          "quote": "$4.30 to $4.45",
+          "claim": "Full-Year Adjusted EPS",
+          "supported": true,
+          "score": 100.0,
+          "start": 2299,
+          "end": 2313,
+          "matched_text": "$4.30 to $4.45"
+        }
+      }
+    ],
+    "catalysts": [
+      "Spot rates normalization in the coming quarters",
+      "Resolution of ongoing litigation with a regional carrier partner"
+    ],
+    "mgmt_credibility": "Management appears credible but has shown some caution, particularly regarding macroeconomic conditions and freight brokerage segment performance. They have not dodged questions but have hedged their statements to avoid overcommitting.",
+    "verification": {
+      "grounding_rate": 1.0,
+      "total_claims": 10,
+      "supported_claims": 10,
+      "flagged": [],
+      "notes": "10/10 claims grounded in the transcript; 0 unsupported claim(s) removed."
+    }
+  }
+]
