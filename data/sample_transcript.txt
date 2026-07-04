@@ -1,0 +1,91 @@
+Northwind Logistics (NWL) Q3 2026 Earnings Call
+
+Operator
+
+Good day, and welcome to the Northwind Logistics third-quarter fiscal 2026 earnings conference call. All participants are in a listen-only mode. After the prepared remarks, there will be a question-and-answer session. I would now like to turn the call over to Sarah Chen, Chief Executive Officer. Please go ahead.
+
+Sarah Chen -- Chief Executive Officer
+
+Thank you, operator, and good afternoon, everyone. We appreciate you joining us today. The third quarter was a solid one for Northwind. Revenue grew 11% year over year to $842 million, and we delivered adjusted EPS of $1.14, ahead of the high end of our guidance. Our automated fulfillment network continued to scale, and we are very pleased with the operating leverage we are seeing across the platform.
+
+Demand in our core parcel segment remained healthy throughout the quarter. We onboarded 340 new enterprise shippers, and net revenue retention held at 118%. I want to be clear: we are executing well, and the team is delivering. Our investments in route optimization are paying off, and we expect that to continue.
+
+That said, I want to address the freight brokerage segment directly. We are seeing softness in spot-market volumes that has persisted longer than we anticipated. As a result, we are taking a more cautious view of the fourth quarter. We now expect full-year revenue in the range of $3.28 billion to $3.31 billion, which is below our prior guidance of $3.35 billion to $3.40 billion. This revision reflects continued uncertainty in the freight environment and some pull-forward we saw earlier in the year.
+
+I'll now hand it over to our CFO, Michael Torres, to walk through the financials in more detail.
+
+Michael Torres -- Chief Financial Officer
+
+Thanks, Sarah. As Sarah mentioned, revenue was $842 million, up 11%. Gross margin expanded 180 basis points to 34.2%, driven by automation and better lane utilization. Operating expenses were well controlled.
+
+On guidance, let me add some color. For the fourth quarter, we expect revenue between $860 million and $890 million and adjusted EPS between $1.05 and $1.15. We are lowering our full-year revenue outlook to $3.28 billion to $3.31 billion, and we are trimming our full-year adjusted EPS guidance to a range of $4.30 to $4.45, down from $4.55 to $4.70 previously. I would characterize the macro backdrop as challenging, and we think it is prudent to plan conservatively.
+
+One item to flag: we recorded a $22 million charge related to an ongoing dispute with a regional carrier partner. We believe our position is strong, but litigation of this nature carries inherent uncertainty, and we cannot predict the ultimate outcome at this time.
+
+With that, operator, we're ready to take questions.
+
+Questions & Answers:
+
+Operator
+
+Our first question comes from Priya Nadar with Meridian Securities.
+
+Priya Nadar -- Meridian Securities -- Analyst
+
+Thanks for taking my question. Sarah, can you help us understand the freight brokerage softness? Is this a demand problem or a pricing problem, and when do you expect it to stabilize?
+
+Sarah Chen -- Chief Executive Officer
+
+Sure, Priya. It's, um, it's a bit of both, honestly. Pricing has been under pressure and volumes have been choppy. I don't want to get ahead of ourselves on timing. It's difficult to say precisely when spot rates normalize. We're monitoring it closely, and we'll know more over the next couple of quarters. I'd rather be cautious here than promise something we can't control.
+
+Priya Nadar -- Meridian Securities -- Analyst
+
+Understood. And on the carrier dispute — should we expect additional charges beyond the $22 million?
+
+Michael Torres -- Chief Financial Officer
+
+I'm not going to speculate on that. What I can say is that the $22 million reflects our current best estimate. Beyond that, there's uncertainty, and we'll update you as the situation develops.
+
+Operator
+
+The next question comes from David Okoro with Harborline Capital.
+
+David Okoro -- Harborline Capital -- Analyst
+
+Great, thanks. The core parcel margins look terrific. Is that 34% gross margin level sustainable, or was there something one-time in the quarter?
+
+Michael Torres -- Chief Financial Officer
+
+Good question, David. We feel good about the margin trajectory in parcel. The automation benefits are structural, not one-time. I'd expect margins in that segment to hold and potentially improve modestly as we scale. That part of the business is performing exactly as we hoped.
+
+David Okoro -- Harborline Capital -- Analyst
+
+And capital allocation — any change to the buyback given the softer outlook?
+
+Sarah Chen -- Chief Executive Officer
+
+No change. We remain committed to returning capital, and we repurchased $75 million of stock this quarter. The balance sheet is strong, and we're confident in the long-term model even if the near term is a little bumpy.
+
+Operator
+
+Our next question comes from Lena Fischer with Cedar Grove Research.
+
+Lena Fischer -- Cedar Grove Research -- Analyst
+
+Thank you. You mentioned some pull-forward earlier in the year. Can you quantify how much of the guidance cut is pull-forward versus genuine demand weakness?
+
+Sarah Chen -- Chief Executive Officer
+
+I appreciate the question, Lena, but I don't want to put a precise number on that split. Directionally, the majority is the freight environment. The pull-forward is a smaller piece. I'd characterize it as, you know, mostly macro-driven.
+
+Operator
+
+This concludes our question-and-answer session. I would like to turn the call back over to Sarah Chen for closing remarks.
+
+Sarah Chen -- Chief Executive Officer
+
+Thank you all. To summarize: our core business is strong, margins are expanding, and we're executing. We're being appropriately cautious on the freight side, but we remain confident in the long-term opportunity. Thanks for joining, and we look forward to updating you next quarter.
+
+Operator
+
+This concludes today's conference call. You may now disconnect.
