@@ -96,16 +96,25 @@ async def run_pipeline(transcript: str, ticker: str = "", quarter: str = "",
     qa = management_text(segments, section="qa")
     mgmt_all = management_text(segments)
 
-    # 2. specialists, concurrently
-    sentiment, risks, guidance = await asyncio.gather(
-        asyncio.to_thread(agents.sentiment_agent, prepared, qa, transcript, llm),
-        asyncio.to_thread(agents.risk_agent, mgmt_all, transcript, llm),
-        asyncio.to_thread(agents.guidance_agent, mgmt_all, transcript, llm),
-    )
-
-    # 3. verifier gates what reaches synthesis
-    sentiment, risks, guidance, report = _verify_and_clean(
-        sentiment, risks, guidance, transcript)
+    # 2 + 3. specialists (concurrent) → verifier, with a self-correction retry:
+    # if the model fabricated everything (nothing grounds), try once more and
+    # keep the better attempt. Deterministic heuristic mode never retries.
+    attempts = 2 if llm is not None else 1
+    best = None
+    for i in range(attempts):
+        s, r, g = await asyncio.gather(
+            asyncio.to_thread(agents.sentiment_agent, prepared, qa, transcript, llm),
+            asyncio.to_thread(agents.risk_agent, mgmt_all, transcript, llm),
+            asyncio.to_thread(agents.guidance_agent, mgmt_all, transcript, llm),
+        )
+        cs, cr, cg, report = _verify_and_clean(s, r, g, transcript)
+        if best is None or report.supported_claims > best[3].supported_claims:
+            best = (cs, cr, cg, report)
+        if report.supported_claims > 0 and report.grounding_rate >= 0.5:
+            break
+        if i + 1 < attempts:
+            report.notes += " Low grounding — retried once."
+    sentiment, risks, guidance, report = best
 
     # 4. synthesize from cleaned findings
     synth = await asyncio.to_thread(agents.synthesize, sentiment, risks, guidance, llm)
