@@ -1,5 +1,5 @@
 ---
-// The Wire — single-page UI. Static build; talks to the FastAPI service.
+// The Wire — styled to match hadimoumeni.com (monochrome, JetBrains Mono, grain).
 ---
 <!doctype html>
 <html lang="en">
@@ -7,64 +7,74 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The Wire — earnings-call intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Sora:wght@500;600&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="mark">◍ THE&nbsp;WIRE</span>
-      <span class="tag">earnings calls → verified investment theses</span>
-    </div>
-    <div id="modelBadge" class="badge muted">checking model…</div>
-  </header>
+  <div class="grain"></div>
 
-  <main class="grid">
-    <!-- Input column -->
-    <section class="col input">
-      <div class="row">
-        <label>Ticker <input id="ticker" value="NWL" /></label>
-        <label>Quarter <input id="quarter" value="Q3 2026" /></label>
+  <div class="wrap">
+    <header class="masthead animate-in">
+      <div class="brand">
+        <span class="site-name">THE&nbsp;WIRE</span>
+        <span class="currently"><span class="label">model /</span> <span class="now" id="modelBadge">checking…</span></span>
       </div>
-      <textarea id="transcript" placeholder="Paste an earnings-call transcript…"></textarea>
-      <div class="row btns">
-        <button id="loadSample" class="ghost">Load sample</button>
-        <button id="analyze" class="primary">Analyze →</button>
-      </div>
+      <div class="tagline">earnings calls → verified investment theses</div>
+    </header>
 
-      <h3 class="recent-h">Recent</h3>
-      <ul id="recent" class="recent"></ul>
-    </section>
+    <main class="container">
+      <section class="panel animate-in animate-delay-1">
+        <div class="field-row">
+          <label>ticker<input id="ticker" value="NWL" autocomplete="off" /></label>
+          <label>quarter<input id="quarter" value="Q3 2026" autocomplete="off" /></label>
+        </div>
+        <textarea id="transcript" placeholder="paste an earnings-call transcript…"></textarea>
+        <div class="actions">
+          <button id="loadSample" class="btn ghost">load sample</button>
+          <button id="analyze" class="btn">analyze →</button>
+        </div>
+      </section>
 
-    <!-- Output column -->
-    <section class="col output">
-      <div id="empty" class="empty">
-        <p>Paste a transcript and hit <b>Analyze</b>.</p>
-        <p class="dim">Three specialist agents (sentiment · risk · guidance) run in
-        parallel; a verifier checks every quote against the transcript before the
-        thesis ships.</p>
-      </div>
-      <div id="memo" class="memo hidden"></div>
-    </section>
-  </main>
+      <section id="empty" class="empty animate-in animate-delay-2">
+        <p>three specialist agents — sentiment · risk · guidance — read the call
+        in parallel. a verifier checks every quote against the transcript before
+        the thesis ships. any format works.</p>
+      </section>
+
+      <section id="memo" class="memo hidden"></section>
+
+      <section class="recent-wrap">
+        <h2 class="section-label">recent</h2>
+        <ul id="recent" class="recent"></ul>
+      </section>
+    </main>
+
+    <footer class="bottom-bar">
+      <span class="location">the wire</span>
+      <span class="dot">·</span>
+      <span class="social-links">
+        <a href="https://github.com/hadimoumeni/the_wire" target="_blank" rel="noopener">github</a>
+      </span>
+    </footer>
+  </div>
 
   <script>
     const API = location.port === '4321' ? 'http://localhost:2424' : '';
     const $ = (id) => document.getElementById(id);
     const esc = (s) => (s ?? '').toString()
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-    const stanceClass = { bullish: 'bull', bearish: 'bear', neutral: 'neu' };
-    const dirClass = { raised: 'bull', lowered: 'bear', withdrawn: 'bear',
-                       maintained: 'neu', introduced: 'neu', unclear: 'muted' };
-    const sevClass = { high: 'bear', medium: 'neu', low: 'muted' };
+    const stanceGlyph = { bullish: '▲', bearish: '▼', neutral: '—' };
+    const dirGlyph = { raised: '↑', lowered: '↓', maintained: '→', introduced: '+',
+                       withdrawn: '×', unclear: '?' };
 
     async function health() {
+      const b = $('modelBadge');
       try {
         const h = await (await fetch(API + '/api/health')).json();
-        const b = $('modelBadge');
-        if (h.model_available) { b.textContent = '● ' + h.model; b.className = 'badge live'; }
-        else { b.textContent = '● heuristic mode (no model)'; b.className = 'badge warn'; }
-      } catch { $('modelBadge').textContent = '● API offline'; }
+        b.textContent = h.model_available ? h.model : 'heuristic (no model)';
+      } catch { b.textContent = 'api offline'; }
     }
 
     async function loadRecent() {
@@ -72,23 +82,22 @@
         const rows = await (await fetch(API + '/api/theses')).json();
         $('recent').innerHTML = rows.map(r => `
           <li data-id="${r.id}">
-            <span class="dot ${stanceClass[r.stance] || 'muted'}"></span>
-            <span class="t">${esc(r.ticker)} · ${esc(r.quarter)}</span>
-            <span class="c">${r.conviction}</span>
-          </li>`).join('') || '<li class="dim">nothing yet</li>';
+            <span class="r-glyph">${stanceGlyph[r.stance] || '—'}</span>
+            <span class="r-tk">${esc(r.ticker)} <span class="dim">${esc(r.quarter)}</span></span>
+            <span class="r-conv">${r.conviction}</span>
+          </li>`).join('') || '<li class="dim empty-li">nothing yet</li>';
         $('recent').querySelectorAll('li[data-id]').forEach(li =>
           li.onclick = () => openThesis(li.dataset.id));
       } catch {}
     }
 
     async function openThesis(id) {
-      const t = await (await fetch(API + '/api/theses/' + id)).json();
-      render(t);
+      render(await (await fetch(API + '/api/theses/' + id)).json());
     }
 
-    function meter(label, pct, cls) {
+    function meter(label, pct) {
       return `<div class="meter"><span class="ml">${label}</span>
-        <span class="track"><span class="fill ${cls}" style="width:${pct}%"></span></span>
+        <span class="track"><span class="fill" style="width:${pct}%"></span></span>
         <span class="mv">${pct}</span></div>`;
     }
 
@@ -98,55 +107,63 @@
       const v = t.verification || {};
       const gr = Math.round((v.grounding_rate || 0) * 100);
       const ev = (t.sentiment?.evidence || []).map(c =>
-        `<li class="quote ok">“${esc(c.quote)}”</li>`).join('');
+        `<li class="quote">${esc(c.quote)}</li>`).join('');
       const guid = (t.guidance || []).map(g =>
-        `<li><span class="pill ${dirClass[g.direction] || 'muted'}">${esc(g.direction)}</span>
-          <b>${esc(g.metric)}</b> — ${esc(g.detail)}</li>`).join('') || '<li class="dim">none</li>';
+        `<li><span class="pill">${dirGlyph[g.direction] || ''} ${esc(g.direction)}</span>
+          <span class="pill-label">${esc(g.metric)}</span> ${esc(g.detail)}</li>`).join('')
+        || '<li class="dim">none</li>';
       const risks = (t.risks || []).map(r =>
-        `<li><span class="pill ${sevClass[r.severity] || 'muted'}">${esc(r.severity)}/${esc(r.status)}</span>
+        `<li><span class="pill sev-${esc(r.severity)}">${esc(r.severity)} · ${esc(r.status)}</span>
           ${esc(r.description)}</li>`).join('') || '<li class="dim">none</li>';
       const cats = (t.catalysts || []).map(c => `<span class="chip">${esc(c)}</span>`).join('');
       const flagged = (v.flagged || []).map(c =>
-        `<li class="quote bad">✗ (${Math.round(c.score||0)}) “${esc(c.quote)}”</li>`).join('');
+        `<li class="quote flag">✗ ${esc(c.quote)}</li>`).join('');
 
       m.innerHTML = `
-        <div class="memo-head">
-          <div class="mh-left">
-            <div class="tk">${esc(t.ticker)} <span class="dim">· ${esc(t.quarter)}</span></div>
-            <div class="hl">${esc(t.headline)}</div>
-          </div>
-          <div class="stance ${stanceClass[t.stance] || 'neu'}">${esc(t.stance)}</div>
+        <div class="memo-head animate-in">
+          <div class="tk">${esc(t.ticker)} <span class="dim">/ ${esc(t.quarter)}</span></div>
+          <h1 class="hl">${esc(t.headline)}</h1>
+          <div class="stance">${stanceGlyph[t.stance] || '—'} ${esc(t.stance)}</div>
         </div>
-        <div class="meters">
-          ${meter('conviction', t.conviction || 0, stanceClass[t.stance] || 'neu')}
-          ${meter('grounding', gr, gr >= 80 ? 'bull' : gr >= 50 ? 'neu' : 'bear')}
-          <div class="verifline">verifier: <b>${v.supported_claims||0}/${v.total_claims||0}</b>
+
+        <div class="meters animate-in animate-delay-1">
+          ${meter('conviction', t.conviction || 0)}
+          ${meter('grounding', gr)}
+          <div class="verifline">verifier / <b>${v.supported_claims||0}/${v.total_claims||0}</b>
             claims grounded · <b>${(v.flagged||[]).length}</b> flagged
-            <span class="modechip ${t.mode === 'ollama' ? 'live' : 'warn'}">${esc(t.mode)} · ${esc(t.model_name)}</span>
+            <span class="modechip">${esc(t.mode)} · ${esc(t.model_name)}</span>
           </div>
         </div>
 
-        <div class="block">
-          <h4>Management sentiment</h4>
+        <div class="block animate-in animate-delay-2">
+          <h2 class="section-label">management sentiment</h2>
           <div class="chips">
-            <span class="chip">tone: ${esc(t.sentiment?.tone)}</span>
-            <span class="chip">confidence: ${t.sentiment?.confidence_score}</span>
-            <span class="chip">hedging: ${t.sentiment?.hedging_score}</span>
+            <span class="chip">tone / ${esc(t.sentiment?.tone)}</span>
+            <span class="chip">confidence / ${t.sentiment?.confidence_score}</span>
+            <span class="chip">hedging / ${t.sentiment?.hedging_score}</span>
           </div>
           <p class="delta">${esc(t.sentiment?.qa_delta)}</p>
           <ul class="quotes">${ev}</ul>
         </div>
 
-        <div class="block"><h4>Forward guidance</h4><ul class="items">${guid}</ul></div>
-        <div class="block"><h4>Key risks</h4><ul class="items">${risks}</ul></div>
-
-        <div class="block">
-          <h4>Read</h4>
-          <p><b>Catalysts:</b> ${cats || '<span class="dim">—</span>'}</p>
-          <p><b>Management credibility:</b> ${esc(t.mgmt_credibility)}</p>
+        <div class="block animate-in animate-delay-3">
+          <h2 class="section-label">forward guidance</h2>
+          <ul class="items">${guid}</ul>
         </div>
 
-        ${flagged ? `<div class="block flagged"><h4>⚠ Verifier flagged (removed — not grounded)</h4>
+        <div class="block animate-in animate-delay-4">
+          <h2 class="section-label">key risks</h2>
+          <ul class="items">${risks}</ul>
+        </div>
+
+        <div class="block animate-in animate-delay-5">
+          <h2 class="section-label">read</h2>
+          <p><span class="k">catalysts</span> ${cats || '<span class="dim">—</span>'}</p>
+          <p><span class="k">management credibility</span> ${esc(t.mgmt_credibility)}</p>
+        </div>
+
+        ${flagged ? `<div class="block flagged animate-in animate-delay-6">
+          <h2 class="section-label">verifier flagged — removed, not grounded</h2>
           <ul class="quotes">${flagged}</ul></div>` : ''}
       `;
       m.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -155,126 +172,189 @@
     async function analyze() {
       const btn = $('analyze');
       const transcript = $('transcript').value.trim();
-      if (transcript.length < 50) { alert('Paste a transcript first.'); return; }
-      btn.disabled = true; btn.textContent = 'Analyzing…';
+      if (transcript.length < 50) { alert('paste a transcript first.'); return; }
+      btn.disabled = true; btn.textContent = 'analyzing…';
       try {
         const res = await fetch(API + '/api/analyze', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            transcript, ticker: $('ticker').value || 'N/A',
-            quarter: $('quarter').value || 'N/A',
-          }),
+          body: JSON.stringify({ transcript, ticker: $('ticker').value || 'N/A', quarter: $('quarter').value || 'N/A' }),
         });
         if (!res.ok) throw new Error(await res.text());
         render(await res.json());
         loadRecent();
       } catch (e) {
-        alert('Analyze failed: ' + e.message);
+        alert('analyze failed: ' + e.message);
       } finally {
-        btn.disabled = false; btn.textContent = 'Analyze →';
+        btn.disabled = false; btn.textContent = 'analyze →';
       }
     }
 
     $('loadSample').onclick = async () => {
-      const d = await (await fetch(API + '/api/sample')).json();
-      $('transcript').value = d.transcript;
+      $('transcript').value = (await (await fetch(API + '/api/sample')).json()).transcript;
     };
     $('analyze').onclick = analyze;
-
     health(); loadRecent();
   </script>
 
   <style is:global>
     :root {
-      --bg:#0b0e13; --panel:#12161e; --panel2:#171c26; --line:#232a36;
-      --ink:#e7ecf3; --dim:#8b96a6; --muted:#6b7688;
-      --bull:#37d399; --bear:#f2555a; --neu:#f4b740; --accent:#5b9dff;
+      --color-bg:#0a0a0a;
+      --text-primary:rgba(255,255,255,.92); --text-body:rgba(255,255,255,.5);
+      --text-secondary:rgba(255,255,255,.35); --text-muted:rgba(255,255,255,.25);
+      --text-subtle:rgba(255,255,255,.15); --text-slash:rgba(255,255,255,.1);
+      --border-default:rgba(255,255,255,.06); --border-hover:rgba(255,255,255,.15);
+      --border-subtle:rgba(255,255,255,.04);
+      --link-default:rgba(255,255,255,.4); --link-hover:rgba(255,255,255,.7);
+      --font-mono:"JetBrains Mono",monospace; --font-display:"Sora",sans-serif;
+      --space-md:1rem; --space-lg:1.5rem; --space-xl:2rem; --space-2xl:3rem;
+      --max-width:720px; --page-gutter:3rem; --ease:cubic-bezier(.16,1,.3,1);
     }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--ink);
-      font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-    .topbar { display:flex; justify-content:space-between; align-items:center;
-      padding:14px 22px; border-bottom:1px solid var(--line); background:var(--panel); }
-    .brand { display:flex; align-items:baseline; gap:14px; }
-    .mark { font-weight:800; letter-spacing:.5px; font-size:19px; }
-    .tag { color:var(--muted); font-size:13px; }
-    .badge { font-size:12px; padding:5px 10px; border-radius:20px; border:1px solid var(--line);
-      font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
-    .badge.live { color:var(--bull); border-color:#1e4d3d; background:#0e1a15; }
-    .badge.warn { color:var(--neu); border-color:#4d3f1e; background:#1a160e; }
-    .badge.muted { color:var(--muted); }
+    @media (max-width:768px){ :root{ --page-gutter:1.5rem; } }
+    *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+    html{ font-size:16px; scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+    body{ font-family:var(--font-mono); font-weight:400; line-height:1.6;
+      color:var(--text-body); background:var(--color-bg); min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 
-    .grid { display:grid; grid-template-columns:400px 1fr; gap:18px; padding:18px 22px;
-      max-width:1280px; margin:0 auto; align-items:start; }
-    @media (max-width:900px){ .grid { grid-template-columns:1fr; } }
-    .col { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+    /* film grain — same as hadimoumeni.com */
+    @keyframes grain{0%,100%{transform:translate(0)}10%{transform:translate(-5%,-10%)}
+      20%{transform:translate(-15%,5%)}30%{transform:translate(7%,-25%)}
+      40%{transform:translate(-5%,25%)}50%{transform:translate(-15%,10%)}
+      60%{transform:translate(15%,0)}70%{transform:translateY(15%)}
+      80%{transform:translate(3%,35%)}90%{transform:translate(-10%,10%)}}
+    .grain{ position:fixed; top:-50%; left:-50%; width:200%; height:200%; z-index:9999;
+      pointer-events:none; opacity:.025; animation:grain 8s steps(10) infinite;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-    .row { display:flex; gap:10px; }
-    label { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted); flex:1; }
-    input, textarea { background:var(--panel2); border:1px solid var(--line); color:var(--ink);
-      border-radius:8px; padding:9px 11px; font:inherit; width:100%; }
-    textarea { height:340px; margin:12px 0; resize:vertical; font-size:13px;
-      font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
-    .btns { justify-content:flex-end; }
-    button { border-radius:8px; padding:10px 16px; font:inherit; font-weight:600; cursor:pointer;
-      border:1px solid var(--line); }
-    button.ghost { background:transparent; color:var(--ink); }
-    button.primary { background:var(--accent); border-color:var(--accent); color:#06101f; }
-    button:disabled { opacity:.55; cursor:default; }
+    @keyframes fadeInUp{0%{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .animate-in{ animation:fadeInUp .6s var(--ease) forwards; opacity:0; }
+    .animate-delay-1{animation-delay:.1s} .animate-delay-2{animation-delay:.2s}
+    .animate-delay-3{animation-delay:.3s} .animate-delay-4{animation-delay:.4s}
+    .animate-delay-5{animation-delay:.5s} .animate-delay-6{animation-delay:.6s}
 
-    .recent-h { font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted);
-      margin:20px 0 8px; }
-    .recent { list-style:none; margin:0; padding:0; }
-    .recent li { display:flex; align-items:center; gap:9px; padding:8px 6px; border-radius:7px;
-      cursor:pointer; font-size:13px; }
-    .recent li:hover { background:var(--panel2); }
-    .recent .t { flex:1; } .recent .c { color:var(--muted); font-family:ui-monospace,monospace; }
-    .dot { width:8px; height:8px; border-radius:50%; background:var(--muted); }
-    .dot.bull{background:var(--bull)} .dot.bear{background:var(--bear)} .dot.neu{background:var(--neu)}
+    .wrap{ min-height:100vh; display:flex; flex-direction:column;
+      padding:clamp(2rem,6vh,4rem) 0 2rem; }
+    .container,.masthead,.bottom-bar{ width:100%; max-width:var(--max-width);
+      margin:0 auto; padding-left:var(--page-gutter); padding-right:var(--page-gutter); }
 
-    .empty { color:var(--muted); padding:40px 20px; }
-    .empty .dim { font-size:13px; }
-    .dim { color:var(--muted); } .hidden { display:none; }
+    /* masthead */
+    .masthead{ margin-bottom:var(--space-2xl); }
+    .brand{ display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap; }
+    .site-name{ font-family:var(--font-display); font-weight:600; font-size:1rem;
+      letter-spacing:.14em; color:var(--text-primary); text-transform:uppercase; }
+    .currently{ font-size:.7rem; letter-spacing:.03em; color:var(--text-body);
+      text-transform:lowercase; }
+    .currently .label{ color:var(--text-muted); }
+    .tagline{ margin-top:.7rem; font-size:.72rem; letter-spacing:.04em;
+      color:var(--text-secondary); text-transform:lowercase; }
 
-    .memo-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
-      border-bottom:1px solid var(--line); padding-bottom:14px; }
-    .tk { font-family:ui-monospace,monospace; font-size:15px; color:var(--accent); }
-    .hl { font-size:20px; font-weight:700; margin-top:4px; }
-    .stance { text-transform:uppercase; font-weight:800; font-size:13px; letter-spacing:.5px;
-      padding:8px 14px; border-radius:8px; align-self:center; }
-    .stance.bull{background:#0e1a15;color:var(--bull);border:1px solid #1e4d3d}
-    .stance.bear{background:#1c0f10;color:var(--bear);border:1px solid #4d1e20}
-    .stance.neu{background:#1a160e;color:var(--neu);border:1px solid #4d3f1e}
+    /* input panel */
+    .panel{ border-top:1px solid var(--border-default); padding-top:var(--space-lg);
+      margin-bottom:var(--space-2xl); }
+    .field-row{ display:flex; gap:1rem; margin-bottom:.9rem; }
+    label{ flex:1; display:flex; flex-direction:column; gap:.4rem; font-size:.62rem;
+      letter-spacing:.14em; text-transform:uppercase; color:var(--text-muted); }
+    input,textarea{ font-family:var(--font-mono); color:var(--text-primary);
+      background:transparent; border:1px solid var(--border-default);
+      padding:.6rem .7rem; font-size:.82rem; width:100%; transition:border-color .3s ease; }
+    input:focus,textarea:focus{ outline:none; border-color:var(--border-hover); }
+    textarea{ height:clamp(180px,32vh,300px); resize:vertical; line-height:1.6;
+      font-size:.78rem; color:var(--text-body); }
+    input::placeholder,textarea::placeholder{ color:var(--text-subtle); }
+    .actions{ display:flex; justify-content:flex-end; gap:.6rem; margin-top:.9rem; }
+    .btn{ font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em;
+      text-transform:uppercase; color:var(--text-primary); background:transparent;
+      border:1px solid var(--border-hover); padding:.55rem 1.1rem; cursor:pointer;
+      transition:color .3s ease,border-color .3s ease,background .3s ease; }
+    .btn:hover{ background:#ffffff0d; border-color:var(--text-secondary); }
+    .btn.ghost{ border-color:var(--border-default); color:var(--text-body); }
+    .btn.ghost:hover{ color:var(--text-primary); }
+    .btn:disabled{ opacity:.4; cursor:default; }
 
-    .meters { padding:14px 0; border-bottom:1px solid var(--line); }
-    .meter { display:flex; align-items:center; gap:10px; margin:6px 0; }
-    .meter .ml { width:90px; font-size:12px; color:var(--muted); }
-    .meter .track { flex:1; height:8px; background:var(--panel2); border-radius:5px; overflow:hidden; }
-    .meter .fill { display:block; height:100%; }
-    .fill.bull{background:var(--bull)} .fill.bear{background:var(--bear)} .fill.neu{background:var(--neu)}
-    .meter .mv { width:34px; text-align:right; font-family:ui-monospace,monospace; font-size:12px; }
-    .verifline { font-size:12.5px; color:var(--dim); margin-top:8px; }
-    .verifline b { color:var(--ink); }
-    .modechip { float:right; font-family:ui-monospace,monospace; font-size:11px; padding:2px 8px;
-      border-radius:12px; border:1px solid var(--line); }
-    .modechip.live{color:var(--bull)} .modechip.warn{color:var(--neu)}
+    .empty{ color:var(--text-secondary); font-size:.8rem; font-weight:300;
+      line-height:1.7; margin-bottom:var(--space-2xl); max-width:52ch; }
+    .dim{ color:var(--text-muted); } .hidden{ display:none; }
 
-    .block { padding:14px 0; border-bottom:1px solid var(--line); }
-    .block h4 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
-    .chips { display:flex; gap:8px; flex-wrap:wrap; }
-    .chip { background:var(--panel2); border:1px solid var(--line); border-radius:20px;
-      padding:4px 11px; font-size:12px; }
-    .delta { color:var(--dim); font-size:13.5px; margin:10px 0; }
-    ul.quotes, ul.items { list-style:none; margin:8px 0 0; padding:0; }
-    ul.items li { padding:7px 0; font-size:13.5px; display:flex; gap:9px; align-items:baseline; }
-    .pill { font-size:11px; text-transform:uppercase; padding:2px 8px; border-radius:5px;
-      font-weight:700; white-space:nowrap; }
-    .pill.bull{background:#0e1a15;color:var(--bull)} .pill.bear{background:#1c0f10;color:var(--bear)}
-    .pill.neu{background:#1a160e;color:var(--neu)} .pill.muted{background:var(--panel2);color:var(--muted)}
-    .quote { padding:7px 11px; margin:6px 0; border-radius:7px; font-size:13px; border-left:2px solid; }
-    .quote.ok { background:#0d1512; border-color:var(--bull); color:#c9e7db; }
-    .quote.bad { background:#160f10; border-color:var(--bear); color:#e7c9cb; }
-    .flagged h4 { color:var(--bear); }
+    /* memo */
+    .memo-head{ margin-bottom:var(--space-xl); }
+    .tk{ font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--text-secondary); }
+    .hl{ font-family:var(--font-display); font-weight:500;
+      font-size:clamp(1.4rem,3.6vw,2.2rem); line-height:1.2; color:var(--text-primary);
+      margin:.5rem 0 .8rem; }
+    .stance{ display:inline-block; font-size:.72rem; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--text-primary);
+      border:1px solid var(--border-hover); padding:.35rem .7rem; }
+
+    .meters{ padding:var(--space-lg) 0; border-top:1px solid var(--border-default);
+      border-bottom:1px solid var(--border-default); margin-bottom:var(--space-xl); }
+    .meter{ display:flex; align-items:center; gap:1rem; margin:.4rem 0; }
+    .meter .ml{ width:6.5rem; font-size:.62rem; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--text-muted); }
+    .meter .track{ flex:1; height:2px; background:var(--border-default); overflow:hidden; }
+    .meter .fill{ display:block; height:100%; background:rgba(255,255,255,.85); }
+    .meter .mv{ width:2rem; text-align:right; font-size:.72rem; color:var(--text-secondary); }
+    .verifline{ font-size:.68rem; letter-spacing:.02em; color:var(--text-secondary);
+      margin-top:.9rem; }
+    .verifline b{ color:var(--text-primary); font-weight:500; }
+    .modechip{ float:right; font-size:.6rem; letter-spacing:.05em; color:var(--text-muted);
+      border:1px solid var(--border-default); padding:.15rem .5rem; }
+
+    .block{ padding:var(--space-lg) 0; border-bottom:1px solid var(--border-default); }
+    .section-label{ font-family:var(--font-mono); font-size:.62rem; font-weight:500;
+      letter-spacing:.18em; text-transform:uppercase; color:var(--text-secondary);
+      margin-bottom:var(--space-md); }
+    .chips{ display:flex; gap:.5rem; flex-wrap:wrap; }
+    .chip{ font-size:.66rem; letter-spacing:.04em; color:var(--text-body);
+      border:1px solid var(--border-default); padding:.3rem .7rem; text-transform:lowercase; }
+    .delta{ color:var(--text-secondary); font-size:.8rem; font-weight:300;
+      line-height:1.7; margin:.9rem 0 0; }
+
+    ul.quotes,ul.items{ list-style:none; margin:.6rem 0 0; }
+    ul.items li{ padding:.5rem 0; font-size:.8rem; font-weight:300; line-height:1.6;
+      color:var(--text-body); display:flex; gap:.7rem; align-items:baseline; flex-wrap:wrap; }
+    .pill{ font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; font-weight:500;
+      color:var(--text-primary); border:1px solid var(--border-hover); padding:.2rem .5rem;
+      white-space:nowrap; }
+    .pill.sev-high{ color:var(--text-primary); border-color:var(--text-secondary); }
+    .pill.sev-medium{ color:var(--text-secondary); }
+    .pill.sev-low{ color:var(--text-muted); border-color:var(--border-default); }
+    .pill-label{ color:var(--text-primary); text-transform:uppercase; font-size:.68rem;
+      letter-spacing:.04em; }
+    .quote{ padding:.55rem .9rem; margin:.5rem 0; font-size:.76rem; font-weight:300;
+      line-height:1.6; color:var(--text-secondary); border-left:1px solid var(--border-hover);
+      background:#ffffff05; }
+    .quote.flag{ color:var(--text-muted); border-left-color:var(--text-subtle);
+      text-decoration:line-through; text-decoration-color:var(--text-subtle); }
+    .k{ display:inline-block; min-width:9.5rem; font-size:.6rem; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--text-muted); }
+    .block p{ font-size:.8rem; font-weight:300; line-height:1.7; color:var(--text-body);
+      margin-bottom:.5rem; }
+
+    /* recent */
+    .recent-wrap{ margin-top:var(--space-2xl); }
+    .recent{ list-style:none; }
+    .recent li{ display:flex; align-items:center; gap:.9rem; padding:.55rem 0;
+      font-size:.76rem; border-bottom:1px solid var(--border-subtle); cursor:pointer;
+      color:var(--text-body); transition:color .2s ease; }
+    .recent li[data-id]:hover{ color:var(--text-primary); }
+    .recent .r-glyph{ color:var(--text-muted); width:1rem; }
+    .recent .r-tk{ flex:1; text-transform:uppercase; letter-spacing:.04em; }
+    .recent .r-conv{ color:var(--text-muted); }
+    .recent .empty-li{ cursor:default; border:none; }
+
+    /* footer */
+    .bottom-bar{ margin-top:var(--space-2xl); display:flex; align-items:center; gap:.6rem;
+      font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); }
+    .bottom-bar .dot{ color:var(--text-subtle); }
+    .social-links a{ color:var(--link-default); text-decoration:none;
+      border-bottom:1px solid var(--border-default); transition:color .3s ease,border-color .3s ease; }
+    .social-links a:hover{ color:var(--link-hover); border-bottom-color:var(--border-hover); }
+
+    @media (max-width:768px){
+      .field-row{ flex-direction:column; gap:.6rem; }
+      .modechip{ float:none; display:inline-block; margin-top:.4rem; }
+    }
   </style>
 </body>
 </html>
