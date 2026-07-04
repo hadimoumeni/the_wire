@@ -88,7 +88,25 @@ On the bundled sample the pipeline is deterministic at **100% grounding**.
 The local 7B model is free on your machine but too large for a cheap cloud VM.
 Mirroring the **generate-locally / display-in-cloud** split: generation runs on
 your Mac and writes theses to SQLite; a small FastAPI + Astro service (Fly.io,
-1 GB, like p4p) serves the stored theses. Live generation runs locally.
+like p4p) serves the stored theses. Deployed live: https://the-wire-hadi.fly.dev
+
+**Cloud generation (also free).** The model layer is provider-agnostic. Set an
+OpenAI-compatible endpoint and the deployed site generates in the cloud too —
+default is Groq's free tier (Llama-3.3-70B). No key set → the cloud service runs
+in heuristic mode; local dev uses Ollama.
+
+```bash
+fly secrets set LLM_API_KEY=<groq-key> \
+  LLM_BASE_URL=https://api.groq.com/openai/v1 \
+  LLM_MODEL=llama-3.3-70b-versatile --app the-wire-hadi
+```
+
+| env var | purpose |
+|---|---|
+| `LLM_API_KEY` | hosted key → selects the OpenAI-compatible client |
+| `LLM_BASE_URL` | endpoint (Groq / OpenRouter / HF router / …) |
+| `LLM_MODEL` | model id at that provider |
+| `WIRE_LLM=heuristic` | force the offline baseline |
 
 ## Stack
 

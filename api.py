@@ -69,6 +69,7 @@ def health():
         "ok": True,
         "model_available": client is not None,
         "model": client.model if client else "heuristic-baseline",
+        "provider": getattr(client, "provider", "heuristic") if client else "heuristic",
     }
 
 
