@@ -90,7 +90,19 @@ Mirroring the **generate-locally / display-in-cloud** split: generation runs on
 your Mac and writes theses to SQLite; a small FastAPI + Astro service (Fly.io,
 like p4p) serves the stored theses. Deployed live: https://the-wire-hadi.fly.dev
 
-**Cloud generation (also free).** The model layer is provider-agnostic. Set an
+**Publishing new theses (no account, no cost).** Generate locally with the real
+model, then publish to the live site — the cloud DB seeds from `seed/theses.json`:
+
+```bash
+python run.py data/aapl.txt --ticker AAPL --quarter "Q1 2026"   # generate (local 7B)
+python publish.py --deploy                                      # refresh seed + deploy
+```
+
+`publish.py` only publishes real-model (Ollama) theses by default, so the live
+site never shows the heuristic baseline.
+
+**Cloud generation (also free, optional).** If you want the deployed *Analyze*
+button to generate live, the model layer is provider-agnostic. Set an
 OpenAI-compatible endpoint and the deployed site generates in the cloud too —
 default is Groq's free tier (Llama-3.3-70B). No key set → the cloud service runs
 in heuristic mode; local dev uses Ollama.
