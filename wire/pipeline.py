@@ -88,7 +88,7 @@ async def run_pipeline(transcript: str, ticker: str = "", quarter: str = "",
                        llm: OllamaClient | None = None, persist: bool = True) -> Thesis:
     if llm is None:
         llm = get_client()
-    mode = "ollama" if llm is not None else "heuristic"
+    mode = llm.provider if llm is not None else "heuristic"
     model_name = llm.model if llm is not None else "heuristic-baseline"
 
     segments = parse_transcript(transcript)
